@@ -4,17 +4,14 @@ import authService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-    const [user, setUser] = useState(null);
+    const [user] = useState(authService.getCurrentUser());
     const navigate = useNavigate();
 
     useEffect(() => {
-        const currentUser = authService.getCurrentUser();
-        if (!currentUser) {
+        if (!user) {
             navigate('/login');
-        } else {
-            setUser(currentUser);
         }
-    }, [navigate]);
+    }, [user, navigate]);
 
     if (!user) return null;
 

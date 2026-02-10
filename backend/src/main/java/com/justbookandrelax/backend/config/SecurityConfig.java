@@ -1,6 +1,7 @@
 package com.justbookandrelax.backend.config;
 
 import com.justbookandrelax.backend.service.CustomUserDetailsService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +31,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+
+    // Removed @Bean to prevent Spring Boot from auto-registering this filter
+    // globally
+    private JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,11 +49,12 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/rides/search")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -78,13 +86,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/auth/**"))
-                .requestMatchers(new AntPathRequestMatcher("/api/content/**"))
-                .requestMatchers(new AntPathRequestMatcher("/api/rides/search"));
     }
 }

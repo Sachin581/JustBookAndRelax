@@ -1,22 +1,16 @@
-
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../services/auth.service';
-import { useEffect, useState } from 'react';
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-  }, [location]); // Re-check on route change
+  // Header re-renders on route change because of useLocation hook.
+  // We can read the current user directly from local storage on every render.
+  const user = authService.getCurrentUser();
 
   const handleLogout = () => {
     authService.logout();
-    setUser(null);
     navigate('/');
     window.location.reload();
   };

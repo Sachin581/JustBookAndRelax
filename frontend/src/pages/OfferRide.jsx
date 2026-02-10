@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import rideService from '../services/ride.service';
 import LocationInput from '../components/LocationInput';
@@ -22,15 +22,15 @@ export default function OfferRide() {
 
     const fetchRoutes = async () => {
         try {
-            // Ideally should be a public endpoint or user-accessible
-            const response = await import('axios').then(m => m.default.get('http://localhost:8081/api/routes/active'));
-            const routes = response.data;
-            const cities = new Set();
-            routes.forEach(r => {
-                cities.add(r.fromCity);
-                cities.add(r.toCity);
-            });
-            setAvailableCities(Array.from(cities));
+            const routes = await rideService.getActiveRoutes();
+            if (Array.isArray(routes)) {
+                const cities = new Set();
+                routes.forEach(r => {
+                    if (r.fromCity) cities.add(r.fromCity);
+                    if (r.toCity) cities.add(r.toCity);
+                });
+                setAvailableCities(Array.from(cities));
+            }
         } catch (error) {
             console.error("Failed to fetch routes", error);
         }

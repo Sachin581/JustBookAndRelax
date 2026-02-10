@@ -29,8 +29,21 @@ const searchRides = async (origin, destination) => {
     return response.data;
 };
 
+const getActiveRoutes = async () => {
+    // Routes are public or user accessible, but let's add auth just in case backend requires it (which it does for now, mostly default)
+    // Actually RouteController says: @GetMapping("/active") public ... getActiveRoutes
+    // SecurityConfig says: /api/routes/active is NOT permitted, so it requires AUTH.
+    const user = authService.getCurrentUser();
+    const token = user ? user.token : '';
+    const response = await axios.get('http://localhost:8081/api/routes/active', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+};
+
 export default {
     createRide,
     getMyOffers,
-    searchRides
+    searchRides,
+    getActiveRoutes
 };

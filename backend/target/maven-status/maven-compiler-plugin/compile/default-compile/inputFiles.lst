@@ -1,6 +1,8 @@
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/controller/AuthController.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/dto/SocialLink.java
+/home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/service/BookingService.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/dto/LoginRequest.java
+/home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/service/RideService.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/repository/RouteRepository.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/controller/BookingController.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/service/AuthService.java
@@ -20,10 +22,12 @@
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/repository/UserRepository.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/entity/BookingStatus.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/dto/RideDto.java
+/home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/service/RouteService.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/repository/RideRepository.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/entity/Route.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/controller/ContentController.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/dto/RouteDto.java
+/home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/service/UserService.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/config/SecurityConfig.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/repository/BookingRepository.java
 /home/lt-366/Documents/JustBookAndRelax/backend/src/main/java/com/justbookandrelax/backend/dto/RegisterRequest.java

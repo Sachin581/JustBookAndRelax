@@ -4,15 +4,13 @@ import authService from '../services/auth.service';
 
 export default function AdminLayout() {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const [user] = useState(authService.getCurrentUser());
 
     useEffect(() => {
-        const currentUser = authService.getCurrentUser();
-        if (!currentUser || currentUser.role !== 'ADMIN') {
+        if (!user || user.role !== 'ADMIN') {
             navigate('/login');
         }
-        setUser(currentUser);
-    }, [navigate]);
+    }, [user, navigate]);
 
     const handleLogout = () => {
         authService.logout();

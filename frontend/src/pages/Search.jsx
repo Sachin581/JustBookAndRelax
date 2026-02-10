@@ -38,6 +38,7 @@ export default function Search() {
         if (from && to) {
             handleSearch(new Event('submit'));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchRoutes = async () => {

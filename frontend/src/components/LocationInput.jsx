@@ -8,7 +8,6 @@ const DEFAULT_CITIES = [
 ];
 
 export default function LocationInput({
-    label,
     value,
     onChange,
     placeholder,
@@ -40,7 +39,7 @@ export default function LocationInput({
 
         if (userInput.length > 0) {
             const filtered = sourceList.filter(
-                city => city.toLowerCase().toLowerCase().includes(userInput.toLowerCase())
+                city => typeof city === 'string' && city.toLowerCase().includes(userInput.toLowerCase())
             );
             setSuggestions(filtered);
             setShowSuggestions(true);
