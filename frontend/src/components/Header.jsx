@@ -1,0 +1,99 @@
+
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import authService from '../services/auth.service';
+import { useEffect, useState } from 'react';
+
+export default function Header() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isActive = (path) => location.pathname === path;
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+  }, [location]); // Re-check on route change
+
+  const handleLogout = () => {
+    authService.logout();
+    setUser(null);
+    navigate('/');
+    window.location.reload();
+  };
+
+  return (
+    <header className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="text-2xl font-bold tracking-tight text-primary-dark hover:text-yellow-600 transition-colors">
+              JustBookAndRelax
+            </Link>
+          </div>
+          <nav>
+            <ul className="flex items-center space-x-6">
+              {/* Search is primarily on Home Hero now, but can keep a link */}
+              <li className="hidden md:block">
+                <Link
+                  to="/search"
+                  className="text-primary-dark font-medium border-b-2 border-transparent hover:border-primary-dark transition-all text-sm flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  Search
+                </Link>
+              </li>
+
+              {user ? (
+                <>
+                  <li>
+                    <Link
+                      to="/dashboard"
+                      className={`text-sm font-medium transition-colors duration-200 ${isActive('/dashboard') ? 'text-primary-dark' : 'text-gray-500 hover:text-gray-900'}`}
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li className="relative group">
+                    <button onClick={() => navigate('/profile')} className="flex items-center gap-2 focus:outline-none">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-dark font-bold text-xs ring-2 ring-white shadow-sm hover:ring-primary-dark transition-all">
+                        {user.name.charAt(0)}
+                      </div>
+                    </button>
+                    {/* Dropdown for Profile/Logout - Simplified as links for now */}
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="text-sm font-medium text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      to="/login"
+                      className={`text-sm font-medium transition-colors duration-200 ${isActive('/login') ? 'text-primary-dark' : 'text-gray-500 hover:text-gray-900'}`}
+                    >
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register"
+                      className={`px-5 py-2.5 rounded-full text-sm font-bold text-white bg-primary-dark hover:bg-yellow-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
+                    >
+                      Register
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}
