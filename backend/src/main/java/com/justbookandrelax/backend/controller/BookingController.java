@@ -1,6 +1,7 @@
 package com.justbookandrelax.backend.controller;
 
-import com.justbookandrelax.backend.dto.BookingDto;
+import com.justbookandrelax.backend.dto.BookingRequest;
+import com.justbookandrelax.backend.dto.BookingResponse;
 import com.justbookandrelax.backend.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,13 @@ public class BookingController {
         private final BookingService bookingService;
 
         @PostMapping
-        public ResponseEntity<BookingDto> createBooking(@RequestParam("rideId") Long rideId,
+        public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest request,
                         @AuthenticationPrincipal UserDetails userDetails) {
-                return ResponseEntity.ok(bookingService.createBooking(rideId, userDetails.getUsername()));
+                return ResponseEntity.ok(bookingService.createBooking(request, userDetails.getUsername()));
         }
 
         @GetMapping("/me")
-        public ResponseEntity<List<BookingDto>> getMyBookings(@AuthenticationPrincipal UserDetails userDetails) {
+        public ResponseEntity<List<BookingResponse>> getMyBookings(@AuthenticationPrincipal UserDetails userDetails) {
                 return ResponseEntity.ok(bookingService.getMyBookings(userDetails.getUsername()));
         }
 }

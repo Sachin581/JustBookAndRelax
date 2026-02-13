@@ -70,18 +70,18 @@ export default function Profile() {
                                 <div key={ride.id} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col md:flex-row justify-between items-center hover:shadow-lg transition-shadow">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-4 mb-2">
-                                            <span className="font-bold text-lg">{ride.origin}</span>
+                                            <span className="font-bold text-lg">{ride.source}</span>
                                             <span className="text-gray-400">➝</span>
                                             <span className="font-bold text-lg">{ride.destination}</span>
                                         </div>
                                         <div className="text-sm text-gray-500 flex space-x-4">
-                                            <span>📅 {new Date(ride.departureTime).toLocaleDateString()}</span>
-                                            <span>⏰ {new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <span>📅 {new Date(ride.dateTime).toLocaleDateString()}</span>
+                                            <span>⏰ {new Date(ride.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                         </div>
                                     </div>
                                     <div className="mt-4 md:mt-0 text-right">
-                                        <p className="text-xl font-bold text-primary-dark">${ride.price}</p>
-                                        <p className="text-sm text-gray-500">{ride.seats} seats left</p>
+                                        <p className="text-xl font-bold text-primary-dark">${ride.pricePerSeat}</p>
+                                        <p className="text-sm text-gray-500">{ride.availableSeats} seats left</p>
                                     </div>
                                 </div>
                             ))}

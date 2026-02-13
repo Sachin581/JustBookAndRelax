@@ -1,11 +1,13 @@
 package com.justbookandrelax.backend.service;
 
-import com.justbookandrelax.backend.dto.BookingDto;
-import com.justbookandrelax.backend.entity.Booking;
-import com.justbookandrelax.backend.entity.BookingStatus;
-import com.justbookandrelax.backend.entity.Ride;
-import com.justbookandrelax.backend.entity.User;
+import com.justbookandrelax.backend.dto.BookingRequest;
+import com.justbookandrelax.backend.dto.BookingResponse;
+import com.justbookandrelax.backend.dto.PointDto;
+import com.justbookandrelax.backend.entity.*;
+import com.justbookandrelax.backend.exception.ResourceNotFoundException;
 import com.justbookandrelax.backend.repository.BookingRepository;
+import com.justbookandrelax.backend.repository.DropPointRepository;
+import com.justbookandrelax.backend.repository.PickupPointRepository;
 import com.justbookandrelax.backend.repository.RideRepository;
 import com.justbookandrelax.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,53 +25,83 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
+    private final PickupPointRepository pickupPointRepository;
+    private final DropPointRepository dropPointRepository;
 
     @Transactional
-    public BookingDto createBooking(Long rideId, String userEmail) {
+    public BookingResponse createBooking(BookingRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RuntimeException("Ride not found"));
+        Ride ride = rideRepository.findById(request.getRideId())
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found"));
 
-        if (ride.getSeats() <= 0) {
-            throw new RuntimeException("Ride is full");
+        // Validate Points
+        PickupPoint pickup = pickupPointRepository.findById(request.getPickupPointId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pickup point not found"));
+        DropPoint drop = dropPointRepository.findById(request.getDropPointId())
+                .orElseThrow(() -> new ResourceNotFoundException("Drop point not found"));
+
+        if (!pickup.getRide().getId().equals(ride.getId()) || !drop.getRide().getId().equals(ride.getId())) {
+            throw new RuntimeException("Selected points do not belong to this ride");
         }
 
-        // Decrement seats
-        ride.setSeats(ride.getSeats() - 1);
+        if (ride.getAvailableSeats() < request.getSeats()) {
+            throw new RuntimeException("Not enough seats available");
+        }
+
+        // Decrement available seats
+        ride.setAvailableSeats(ride.getAvailableSeats() - request.getSeats());
         rideRepository.save(ride);
 
         Booking booking = Booking.builder()
                 .ride(ride)
                 .passenger(user)
+                .pickupPoint(pickup)
+                .dropPoint(drop)
                 .bookingTime(LocalDateTime.now())
                 .status(BookingStatus.CONFIRMED)
                 .build();
 
         Booking savedBooking = bookingRepository.save(booking);
-        return mapToDto(savedBooking);
+        return mapToResponse(savedBooking);
     }
 
-    public List<BookingDto> getMyBookings(String userEmail) {
+    public List<BookingResponse> getMyBookings(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<Booking> bookings = bookingRepository.findByPassenger(user);
-        return bookings.stream().map(this::mapToDto).collect(Collectors.toList());
+        return bookings.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    private BookingDto mapToDto(Booking booking) {
-        return BookingDto.builder()
+    private BookingResponse mapToResponse(Booking booking) {
+        PointDto pickupDto = PointDto.builder()
+                .id(booking.getPickupPoint().getId())
+                .locationName(booking.getPickupPoint().getLocationName())
+                .address(booking.getPickupPoint().getAddress())
+                .time(booking.getPickupPoint().getTime())
+                .build();
+
+        PointDto dropDto = PointDto.builder()
+                .id(booking.getDropPoint().getId())
+                .locationName(booking.getDropPoint().getLocationName())
+                .address(booking.getDropPoint().getAddress())
+                .time(booking.getDropPoint().getTime())
+                .build();
+
+        return BookingResponse.builder()
                 .id(booking.getId())
                 .rideId(booking.getRide().getId())
                 .passengerName(booking.getPassenger().getName())
                 .bookingTime(booking.getBookingTime())
                 .status(booking.getStatus())
-                .fromCity(booking.getRide().getOrigin())
-                .toCity(booking.getRide().getDestination())
-                .departureTime(booking.getRide().getDepartureTime())
-                .price(booking.getRide().getPrice())
+                .source(booking.getRide().getSource())
+                .destination(booking.getRide().getDestination())
+                .departureTime(booking.getRide().getDateTime())
+                .price(booking.getRide().getPricePerSeat())
+                .pickupPoint(pickupDto)
+                .dropPoint(dropDto)
                 .build();
     }
 }

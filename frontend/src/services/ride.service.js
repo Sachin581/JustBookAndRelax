@@ -1,43 +1,32 @@
-import axios from 'axios';
-import authService from './auth.service';
+import api from './api';
 
-const API_URL = 'http://localhost:8081/api/rides';
+const API_URL = '/api/rides';
 
 const createRide = async (rideData) => {
-    const user = authService.getCurrentUser();
-    const token = user ? user.token : '';
-    const response = await axios.post(API_URL, rideData, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await api.post(API_URL, rideData);
     return response.data;
 };
 
 const getMyOffers = async () => {
-    const user = authService.getCurrentUser();
-    const token = user ? user.token : '';
-    const response = await axios.get(`${API_URL}/my-offers`, {
-        headers: { Authorization: `Bearer ${token}` }
+    const response = await api.get(`${API_URL}/my-offers`);
+    return response.data;
+};
+
+const searchRides = async (source, destination) => {
+    // No auth header needed for search but api instance handles it if present
+    const response = await api.get(`${API_URL}/search`, {
+        params: { source, destination }
     });
     return response.data;
 };
 
-const searchRides = async (origin, destination) => {
-    // No auth header needed for search
-    const response = await axios.get(`${API_URL}/search`, {
-        params: { origin, destination }
-    });
+const getRideById = async (id) => {
+    const response = await api.get(`${API_URL}/${id}`);
     return response.data;
 };
 
 const getActiveRoutes = async () => {
-    // Routes are public or user accessible, but let's add auth just in case backend requires it (which it does for now, mostly default)
-    // Actually RouteController says: @GetMapping("/active") public ... getActiveRoutes
-    // SecurityConfig says: /api/routes/active is NOT permitted, so it requires AUTH.
-    const user = authService.getCurrentUser();
-    const token = user ? user.token : '';
-    const response = await axios.get('http://localhost:8081/api/routes/active', {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+    const response = await api.get('/api/routes/active');
     return response.data;
 };
 
@@ -45,5 +34,6 @@ export default {
     createRide,
     getMyOffers,
     searchRides,
+    getRideById,
     getActiveRoutes
 };

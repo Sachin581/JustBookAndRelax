@@ -7,11 +7,12 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: '#FFF9C4', // Light Yellow
-                'primary-light': '#FFFFF7', // Lighter Yellow
-                'primary-dark': '#FBC02D', // Darker Yellow for accents/buttons
-                secondary: '#FFFFFF', // White
-                accent: '#212121', // Dark Gray/Black for text
+                primary: '#7B2D26', // Deep Maroon
+                secondary: '#5C4033', // Rich Brown
+                'primary-hover': '#9C3F35', // Lighter Maroon
+                'primary-active': '#4A2F27', // Dark Brown
+                'background-light': '#FFF9F5', // Soft Warm White/Beige for background
+                accent: '#212121', // Dark Text
             }
         },
     },

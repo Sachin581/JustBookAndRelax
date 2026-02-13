@@ -33,6 +33,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final com.justbookandrelax.backend.service.CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     // Removed @Bean to prevent Spring Boot from auto-registering this filter
     // globally
@@ -49,12 +51,20 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/content/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/rides/search")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/rides/{id}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        // Configure Spring to listen to the user's custom redirect URI
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/auth/redirect")));
 
         return http.build();
     }

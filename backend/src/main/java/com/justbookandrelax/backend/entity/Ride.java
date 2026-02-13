@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
-@Data
+@lombok.Getter
+@lombok.Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,13 +20,24 @@ public class Ride {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String origin;
+    private String source;
     private String destination;
-    private LocalDateTime departureTime;
-    private Double price;
-    private Integer seats;
+    private LocalDateTime dateTime;
+    private Double pricePerSeat;
+    private Integer totalSeats;
+    private Integer availableSeats;
 
     @ManyToOne
     @JoinColumn(name = "driver_id")
     private User driver;
+
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, orphanRemoval = true)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
+    private java.util.Set<PickupPoint> pickupPoints = new java.util.HashSet<>();
+
+    @OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, orphanRemoval = true)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
+    private java.util.Set<DropPoint> dropPoints = new java.util.HashSet<>();
 }

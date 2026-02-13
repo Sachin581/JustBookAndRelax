@@ -74,36 +74,23 @@ export default function Search() {
         }
     };
 
-    const handleBook = async (rideId) => {
+    const handleBook = (rideId) => {
         if (!user) {
             navigate('/login');
             return;
         }
-
-        try {
-            const userToken = authService.getCurrentUser();
-            const config = { headers: { Authorization: `Bearer ${userToken.token}` } };
-            // Call booking API
-            await import('axios').then(m => m.default.post(`http://localhost:8081/api/bookings?rideId=${rideId}`, {}, config));
-
-            alert("Ride booked successfully!");
-            // Refresh results to update seats
-            handleSearch();
-        } catch (error) {
-            console.error("Booking failed", error);
-            alert("Booking failed: " + (error.response?.data?.message || error.message));
-        }
+        navigate(`/book/${rideId}`);
     };
 
     return (
         <div className="bg-white min-h-screen pb-12">
 
             {/* SEARCH HERO */}
-            <div className="bg-primary/10 py-12">
+            <div className="bg-background-light py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">Find a ride</h1>
                     {/* Resued Search Bar Style */}
-                    <div className="bg-white rounded-2xl shadow-xl p-4 md:p-2 max-w-5xl mx-auto">
+                    <div className="bg-white rounded-2xl shadow-xl p-4 md:p-2 max-w-5xl mx-auto border border-gray-100">
                         <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center gap-2">
                             <div className="relative w-full md:w-1/4">
                                 <LocationInput
@@ -128,7 +115,7 @@ export default function Search() {
                             <div className="relative w-full md:w-1/5 group">
                                 <input
                                     type="date"
-                                    className="block w-full px-4 py-4 border-none rounded-xl bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-primary-dark focus:bg-white transition-colors text-gray-900 placeholder-gray-500"
+                                    className="block w-full px-4 py-4 border-none rounded-xl bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-primary focus:bg-white transition-colors text-gray-900 placeholder-gray-500"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
                                 />
@@ -140,7 +127,7 @@ export default function Search() {
                                     type="number"
                                     min="1"
                                     max="4"
-                                    className="block w-full pl-10 pr-3 py-4 border-none rounded-xl bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-primary-dark focus:bg-white transition-colors text-gray-900"
+                                    className="block w-full pl-10 pr-3 py-4 border-none rounded-xl bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-primary focus:bg-white transition-colors text-gray-900"
                                     value={passengers}
                                     onChange={(e) => setPassengers(e.target.value)}
                                 />
@@ -148,7 +135,7 @@ export default function Search() {
                             <div className="w-full md:w-auto">
                                 <button
                                     type="submit"
-                                    className="w-full md:w-auto bg-primary-dark hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-xl shadow-md transition-all transform hover:scale-105"
+                                    className="w-full md:w-auto btn-premium py-4 px-8 shadow-md"
                                 >
                                     Search
                                 </button>
@@ -169,32 +156,38 @@ export default function Search() {
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-2 text-gray-500 text-sm mb-2">
                                             <span className="font-bold text-gray-900 text-lg">
-                                                {new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(ride.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                             <span>•</span>
-                                            <span>{ride.origin}</span>
+                                            <span>{ride.source}</span>
                                         </div>
                                         <div className="border-l-2 border-gray-300 ml-2 h-4 my-1"></div>
                                         <div className="flex items-center space-x-2 text-gray-500 text-sm">
                                             <span className="font-bold text-gray-900 text-lg">
                                                 {/* Mock arrival time + 2 hours */}
-                                                {new Date(new Date(ride.departureTime).getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {new Date(new Date(ride.dateTime).getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                             <span>•</span>
                                             <span>{ride.destination}</span>
                                         </div>
-                                        <div className="mt-4 flex items-center">
-                                            <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600 font-bold">
-                                                {ride.driverName.charAt(0)}
+                                        <div className="mt-4 flex items-center gap-4">
+                                            <div className="flex items-center">
+                                                <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600 font-bold">
+                                                    {ride.driverName.charAt(0)}
+                                                </div>
+                                                <span className="ml-2 text-sm text-gray-600">{ride.driverName}</span>
                                             </div>
-                                            <span className="ml-2 text-sm text-gray-600">{ride.driverName}</span>
+                                            {/* Show available seats */}
+                                            <div className="text-xs text-primary font-medium px-2 py-1 bg-red-50 rounded-full">
+                                                {ride.availableSeats} seats left
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="mt-4 sm:mt-0 text-right">
-                                        <div className="text-2xl font-bold text-primary-dark">${ride.price}</div>
+                                        <div className="text-2xl font-bold text-primary">${ride.pricePerSeat}</div>
                                         <button
                                             onClick={() => handleBook(ride.id)}
-                                            className="mt-2 px-6 py-2 bg-white border border-primary-dark text-primary-dark font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors"
+                                            className="mt-2 px-6 py-2 bg-white border border-primary text-primary font-medium rounded-full hover:bg-primary hover:text-white transition-colors"
                                         >
                                             Book
                                         </button>
@@ -212,12 +205,12 @@ export default function Search() {
                             {user ? (
                                 <button
                                     onClick={() => navigate('/offer-ride')}
-                                    className="px-8 py-3 bg-primary-dark text-white font-bold rounded-xl hover:bg-yellow-600 transition shadow-md"
+                                    className="btn-premium px-8 py-3"
                                 >
                                     Offer a Ride
                                 </button>
                             ) : (
-                                <p className="text-sm text-gray-400">Driving this route? <a href="/login" className="text-primary-dark hover:underline">Log in</a> to offer a ride!</p>
+                                <p className="text-sm text-gray-400">Driving this route? <a href="/login" className="text-primary hover:underline">Log in</a> to offer a ride!</p>
                             )}
                         </div>
                     )

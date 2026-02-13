@@ -9,9 +9,11 @@ import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import OfferRide from './pages/OfferRide';
 import Profile from './pages/Profile';
+import BookingPage from './pages/BookingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageRoutes from './pages/admin/ManageRoutes';
+
 
 function App() {
   return (
@@ -24,11 +26,13 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
 
+
           {/* User/Driver Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="offer-ride" element={<OfferRide />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="book/:rideId" element={<BookingPage />} />
           </Route>
         </Route>
 

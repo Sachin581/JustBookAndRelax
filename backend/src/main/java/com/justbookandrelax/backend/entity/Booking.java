@@ -27,6 +27,14 @@ public class Booking {
     @JoinColumn(name = "passenger_id", nullable = false)
     private User passenger;
 
+    @ManyToOne
+    @JoinColumn(name = "pickup_point_id")
+    private PickupPoint pickupPoint;
+
+    @ManyToOne
+    @JoinColumn(name = "drop_point_id")
+    private DropPoint dropPoint;
+
     private LocalDateTime bookingTime;
 
     @Enumerated(EnumType.STRING)

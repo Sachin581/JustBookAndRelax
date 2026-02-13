@@ -4,7 +4,33 @@
 
 @layer base {
   body {
-    @apply bg-primary text-gray-800;
+    @apply bg-background-light text-gray-800 font-sans;
+  }
+}
+
+@layer components {
+  .btn-premium {
+    @apply relative inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-br from-primary to-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary;
+
+    /* Standard CSS for properties complex to apply in @apply */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-out;
+  }
+
+  .btn-premium:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transform: scale(1.03);
+  }
+
+  .btn-premium:active {
+    transform: scale(0.98);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  /* Variant for secondary actions if needed, keeps structure but different color */
+  .btn-premium-outline {
+    @apply btn-premium bg-none bg-white text-primary border-primary hover:bg-gray-50;
   }
 }
 

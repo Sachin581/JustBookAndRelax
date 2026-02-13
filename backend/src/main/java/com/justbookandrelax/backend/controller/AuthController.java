@@ -6,6 +6,7 @@ import com.justbookandrelax.backend.dto.RegisterRequest;
 import com.justbookandrelax.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +29,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(
             @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/redirect")
+    public ResponseEntity<AuthResponse> redirect(String authorizationCode) {
+        System.out.println("Authorization Code: " + authorizationCode);
+        return null;
     }
 }

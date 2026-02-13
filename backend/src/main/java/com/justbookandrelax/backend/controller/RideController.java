@@ -1,6 +1,8 @@
 package com.justbookandrelax.backend.controller;
 
-import com.justbookandrelax.backend.dto.RideDto;
+import com.justbookandrelax.backend.dto.RideRequest;
+import com.justbookandrelax.backend.dto.RideResponse;
+import com.justbookandrelax.backend.dto.RideDetailsResponseDTO;
 import com.justbookandrelax.backend.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +20,30 @@ public class RideController {
         private final RideService rideService;
 
         @PostMapping
-        public ResponseEntity<RideDto> createRide(@RequestBody RideDto request,
+        public ResponseEntity<RideResponse> createRide(@RequestBody RideRequest request,
                         @AuthenticationPrincipal UserDetails userDetails) {
                 return ResponseEntity.ok(rideService.createRide(request, userDetails.getUsername()));
         }
 
         @GetMapping("/my-offers")
-        public ResponseEntity<List<RideDto>> getMyOfferedRides(@AuthenticationPrincipal UserDetails userDetails) {
+        public ResponseEntity<List<RideResponse>> getMyOfferedRides(@AuthenticationPrincipal UserDetails userDetails) {
                 return ResponseEntity.ok(rideService.getMyOfferedRides(userDetails.getUsername()));
         }
 
         @GetMapping("/search")
-        public ResponseEntity<List<RideDto>> searchRides(@RequestParam("origin") String origin,
-                        @RequestParam("destination") String destination) {
-                return ResponseEntity.ok(rideService.searchRides(origin, destination));
+        public ResponseEntity<List<RideResponse>> searchRides(
+                        @RequestParam(value = "source", required = false) String source,
+                        @RequestParam(value = "destination", required = false) String destination) {
+                return ResponseEntity.ok(rideService.searchRides(source, destination));
+        }
+
+        @GetMapping("/{id}")
+        public ResponseEntity<RideDetailsResponseDTO> getRideById(@PathVariable Long id) {
+                return ResponseEntity.ok(rideService.getRideById(id));
+        }
+
+        @GetMapping
+        public ResponseEntity<List<RideResponse>> getAllRides() {
+                return ResponseEntity.ok(rideService.getAllRides());
         }
 }
